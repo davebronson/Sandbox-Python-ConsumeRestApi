@@ -1,5 +1,5 @@
-import requests
 import json
+import RestServiceHelper
 
 from BusinessObjects.Address import Address
 from BusinessObjects.Album import Album
@@ -14,106 +14,99 @@ from BusinessObjects.User import User
 # https://github.com/typicode/json-server
 
 userList = []
+
+# Retrieve data from the REST service
+users = RestServiceHelper.getResponseAsJson('https://jsonplaceholder.typicode.com/users?_sort=username&_order=asc')
+todos = RestServiceHelper.getResponseAsJson('https://jsonplaceholder.typicode.com/todos?_sort=userId,title&_order=asc,asc')
+posts = RestServiceHelper.getResponseAsJson('https://jsonplaceholder.typicode.com/posts?_sort=userId,title&_order=asc,asc')
+comments = RestServiceHelper.getResponseAsJson('https://jsonplaceholder.typicode.com/comments?_sort=postId,name&_order=asc,asc')
+albums = RestServiceHelper.getResponseAsJson('https://jsonplaceholder.typicode.com/albums?_sort=userId,title&_order=asc,asc')
+photos = RestServiceHelper.getResponseAsJson('https://jsonplaceholder.typicode.com/photos?_sort=albumId,title&_order=asc,asc')
+
+# Process Users
+# *************
 foundUser = None
 
-# Users
-# *****
-response = requests.get('https://jsonplaceholder.typicode.com/users?_sort=username&_order=asc')
-if response.status_code == 200:
-    responseAsJson = json.loads(response.content.decode('utf-8'))
+for item in users:
+    user = User()
 
-    for item in responseAsJson:
-        user = User()
+    user.id = item['id']
+    user.name = item['name']
+    user.userName = item['username']
+    user.email = item['email']
+    user.phone = item['phone']
+    user.website = item['website']
 
-        user.id = item['id']
-        user.name = item['name']
-        user.userName = item['username']
-        user.email = item['email']
-        user.phone = item['phone']
-        user.website = item['website']
+    user.address.street = item['address']['street']
+    user.address.suite = item['address']['suite']
+    user.address.city = item['address']['city']
+    user.address.zipCode = item['address']['zipcode']
+    user.address.suite = item['address']['suite']
 
-        user.address.street = item['address']['street']
-        user.address.suite = item['address']['suite']
-        user.address.city = item['address']['city']
-        user.address.zipCode = item['address']['zipcode']
-        user.address.suite = item['address']['suite']
+    user.address.geoLatitude = item['address']['geo']['lat']
+    user.address.geoLongitude = item['address']['geo']['lng']
 
-        user.address.geoLatitude = item['address']['geo']['lat']
-        user.address.geoLongitude = item['address']['geo']['lng']
+    user.companyName = item['company']['name']
+    user.companyCatchPhrase = item['company']['catchPhrase']
+    user.companyBs = item['company']['bs']
 
-        user.companyName = item['company']['name']
-        user.companyCatchPhrase = item['company']['catchPhrase']
-        user.companyBs = item['company']['bs']
+    userList.append(user)
 
-        userList.append(user)
 
-# ToDos
-# *****
+# Process ToDos
+# *************
 foundUser = None
-response = requests.get('https://jsonplaceholder.typicode.com/todos?_sort=userId,title&_order=asc,asc')
-if response.status_code == 200:
-    responseAsJson = json.loads(response.content.decode('utf-8'))
 
-    for item in responseAsJson:
-        todo = ToDo()
+for item in todos:
+    todo = ToDo()
 
-        todo.id = item['id']
-        todo.userId = item['userId']
-        todo.title = item['title']
-        todo.completed = item['completed']
+    todo.id = item['id']
+    todo.userId = item['userId']
+    todo.title = item['title']
+    todo.completed = item['completed']
 
-        # Find the ToDo's user, and append
-        if foundUser is None or todo.userId != foundUser.id:
-            foundUser = next((x for x in userList if x.id == todo.userId), None)
-        if foundUser is not None:
-            foundUser.toDos.append(todo)
+    # Find the ToDo's user, and append
+    if foundUser is None or todo.userId != foundUser.id:
+        foundUser = next((x for x in userList if x.id == todo.userId), None)
+    if foundUser is not None:
+        foundUser.toDos.append(todo)
 
-# Posts
-# *****
+
+# Process Posts
+# *************
 foundUser = None
-response = requests.get('https://jsonplaceholder.typicode.com/posts?_sort=userId,title&_order=asc,asc')
-if response.status_code == 200:
-    responseAsJson = json.loads(response.content.decode('utf-8'))
 
-    for item in responseAsJson:
-        post = Post()
+for item in posts:
+    post = Post()
 
-        post.id = item['id']
-        post.userId = item['userId']
-        post.title = item['title']
-        post.body = item['body']
+    post.id = item['id']
+    post.userId = item['userId']
+    post.title = item['title']
+    post.body = item['body']
 
-        # Find the Post's user, and append
-        if foundUser is None or post.userId != foundUser.id:
-            foundUser = next((x for x in userList if x.id == post.userId), None)
-        if foundUser is not None:
-            foundUser.posts.append(post)
-
-
-
-
-
+    # Find the Post's user, and append
+    if foundUser is None or post.userId != foundUser.id:
+        foundUser = next((x for x in userList if x.id == post.userId), None)
+    if foundUser is not None:
+        foundUser.posts.append(post)
 
 
 # Albums
 # ******
 foundUser = None
-response = requests.get('https://jsonplaceholder.typicode.com/albums?_sort=userId,title&_order=asc,asc')
-if response.status_code == 200:
-    responseAsJson = json.loads(response.content.decode('utf-8'))
 
-    for item in responseAsJson:
-        album = Album()
+for item in albums:
+    album = Album()
 
-        album.id = item['id']
-        album.userId = item['userId']
-        album.title = item['title']
+    album.id = item['id']
+    album.userId = item['userId']
+    album.title = item['title']
 
-        # Find the Album's user, and append
-        if foundUser is None or album.userId != foundUser.id:
-            foundUser = next((x for x in userList if x.id == album.userId), None)
-        if foundUser is not None:
-            foundUser.albums.append(album)
+    # Find the Album's user, and append
+    if foundUser is None or album.userId != foundUser.id:
+        foundUser = next((x for x in userList if x.id == album.userId), None)
+    if foundUser is not None:
+        foundUser.albums.append(album)
 
-    print(len(userList))
-    print(len(userList[2].albums))
+print(len(userList))
+print(len(userList[2].albums))
