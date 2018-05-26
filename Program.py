@@ -11,11 +11,14 @@ from BusinessObjects.User import User
 
 # https://code.tutsplus.com/articles/how-to-use-restful-web-apis-in-python--cms-29493
 # https://jsonplaceholder.typicode.com
+# https://github.com/typicode/json-server
 
 userList = []
 foundUser = None
 
-response = requests.get('https://jsonplaceholder.typicode.com/users')
+# Users
+# *****
+response = requests.get('https://jsonplaceholder.typicode.com/users?_sort=username&_order=asc')
 if response.status_code == 200:
     responseAsJson = json.loads(response.content.decode('utf-8'))
 
@@ -44,7 +47,10 @@ if response.status_code == 200:
 
         userList.append(user)
 
-response = requests.get('https://jsonplaceholder.typicode.com/todos')
+# ToDos
+# *****
+foundUser = None
+response = requests.get('https://jsonplaceholder.typicode.com/todos?_sort=userId,title&_order=asc,asc')
 if response.status_code == 200:
     responseAsJson = json.loads(response.content.decode('utf-8'))
 
@@ -62,5 +68,52 @@ if response.status_code == 200:
         if foundUser is not None:
             foundUser.toDos.append(todo)
 
+# Posts
+# *****
+foundUser = None
+response = requests.get('https://jsonplaceholder.typicode.com/posts?_sort=userId,title&_order=asc,asc')
+if response.status_code == 200:
+    responseAsJson = json.loads(response.content.decode('utf-8'))
+
+    for item in responseAsJson:
+        post = Post()
+
+        post.id = item['id']
+        post.userId = item['userId']
+        post.title = item['title']
+        post.body = item['body']
+
+        # Find the Post's user, and append
+        if foundUser is None or post.userId != foundUser.id:
+            foundUser = next((x for x in userList if x.id == post.userId), None)
+        if foundUser is not None:
+            foundUser.posts.append(post)
+
+
+
+
+
+
+
+# Albums
+# ******
+foundUser = None
+response = requests.get('https://jsonplaceholder.typicode.com/albums?_sort=userId,title&_order=asc,asc')
+if response.status_code == 200:
+    responseAsJson = json.loads(response.content.decode('utf-8'))
+
+    for item in responseAsJson:
+        album = Album()
+
+        album.id = item['id']
+        album.userId = item['userId']
+        album.title = item['title']
+
+        # Find the Album's user, and append
+        if foundUser is None or album.userId != foundUser.id:
+            foundUser = next((x for x in userList if x.id == album.userId), None)
+        if foundUser is not None:
+            foundUser.albums.append(album)
+
     print(len(userList))
-    print(len(userList[2].toDos))
+    print(len(userList[2].albums))
