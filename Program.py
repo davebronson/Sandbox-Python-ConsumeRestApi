@@ -16,12 +16,12 @@ from BusinessObjects.User import User
 userList = []
 
 # Retrieve data from the REST service
-users = RestServiceHelper.getResponseAsJson('https://jsonplaceholder.typicode.com/users?_sort=username&_order=asc')
-todos = RestServiceHelper.getResponseAsJson('https://jsonplaceholder.typicode.com/todos?_sort=userId,title&_order=asc,asc')
-posts = RestServiceHelper.getResponseAsJson('https://jsonplaceholder.typicode.com/posts?_sort=userId,title&_order=asc,asc')
-comments = RestServiceHelper.getResponseAsJson('https://jsonplaceholder.typicode.com/comments?_sort=postId,name&_order=asc,asc')
-albums = RestServiceHelper.getResponseAsJson('https://jsonplaceholder.typicode.com/albums?_sort=userId,title&_order=asc,asc')
-photos = RestServiceHelper.getResponseAsJson('https://jsonplaceholder.typicode.com/photos?_sort=albumId,title&_order=asc,asc')
+users = RestServiceHelper.getResponseAsObject('https://jsonplaceholder.typicode.com/users?_sort=username&_order=asc')
+todos = RestServiceHelper.getResponseAsObject('https://jsonplaceholder.typicode.com/todos?_sort=userId,title&_order=asc,asc')
+posts = RestServiceHelper.getResponseAsObject('https://jsonplaceholder.typicode.com/posts?_sort=userId,title&_order=asc,asc')
+comments = RestServiceHelper.getResponseAsObject('https://jsonplaceholder.typicode.com/comments?_sort=postId,name&_order=asc,asc')
+albums = RestServiceHelper.getResponseAsObject('https://jsonplaceholder.typicode.com/albums?_sort=userId,title&_order=asc,asc')
+photos = RestServiceHelper.getResponseAsObject('https://jsonplaceholder.typicode.com/photos?_sort=albumId,title&_order=asc,asc')
 
 # Process Users
 # *************
@@ -84,6 +84,19 @@ for item in posts:
     post.title = item['title']
     post.body = item['body']
 
+    # Append Comments for this Post
+    postsComments = [x for x in comments if x['postId'] == post.id]
+    for c in postsComments:
+        comment = Comment()
+
+        comment.id = c['id']
+        comment.postId = c['postId']
+        comment.name = c['name']
+        comment.email = c['email']
+        comment.body = c['body']
+
+        post.comments.append(comment)
+
     # Find the Post's user, and append
     if foundUser is None or post.userId != foundUser.id:
         foundUser = next((x for x in userList if x.id == post.userId), None)
@@ -101,6 +114,19 @@ for item in albums:
     album.id = item['id']
     album.userId = item['userId']
     album.title = item['title']
+
+    # Append Photos for this Album
+    albumsPhotos = [x for x in photos if x['albumId'] == album.id]
+    for p in albumsPhotos:
+        photo = Photo()
+
+        photo.id = p['id']
+        photo.albumId = p['albumId']
+        photo.title = p['title']
+        photo.url = p['url']
+        photo.thumbnailUrl = p['thumbnailUrl']
+
+        album.photos.append(photo)
 
     # Find the Album's user, and append
     if foundUser is None or album.userId != foundUser.id:
