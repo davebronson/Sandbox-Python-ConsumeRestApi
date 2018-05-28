@@ -9,9 +9,11 @@ from BusinessObjects.Post import Post
 from BusinessObjects.ToDo import ToDo
 from BusinessObjects.User import User
 
-# https://code.tutsplus.com/articles/how-to-use-restful-web-apis-in-python--cms-29493
-# https://jsonplaceholder.typicode.com
-# https://github.com/typicode/json-server
+# https://jsonplaceholder.typicode.com << Faked REST service
+# https://github.com/typicode/json-server << Details on querying the faked REST service
+# http://google.github.io/styleguide/pyguide.html << Google's Python style guide
+
+# TODO Use a Main()
 
 userList = []
 
@@ -36,19 +38,17 @@ for item in users:
     user.email = item['email']
     user.phone = item['phone']
     user.website = item['website']
+    user.companyName = item['company']['name']
+    user.companyCatchPhrase = item['company']['catchPhrase']
+    user.companyBs = item['company']['bs']
 
     user.address.street = item['address']['street']
     user.address.suite = item['address']['suite']
     user.address.city = item['address']['city']
     user.address.zipCode = item['address']['zipcode']
     user.address.suite = item['address']['suite']
-
     user.address.geoLatitude = item['address']['geo']['lat']
     user.address.geoLongitude = item['address']['geo']['lng']
-
-    user.companyName = item['company']['name']
-    user.companyCatchPhrase = item['company']['catchPhrase']
-    user.companyBs = item['company']['bs']
 
     userList.append(user)
 
@@ -104,8 +104,8 @@ for item in posts:
         foundUser.posts.append(post)
 
 
-# Albums
-# ******
+# Process Albums
+# **************
 foundUser = None
 
 for item in albums:
@@ -133,6 +133,3 @@ for item in albums:
         foundUser = next((x for x in userList if x.id == album.userId), None)
     if foundUser is not None:
         foundUser.albums.append(album)
-
-print(len(userList))
-print(len(userList[2].albums))

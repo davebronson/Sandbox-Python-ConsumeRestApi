@@ -3,13 +3,15 @@ import json
 
 def getResponseAsObject(url):
     """
-    Returns a Python object representation of the JSON result of a REST web service call, given the service's URL.
+    Returns a Python object representation of the JSON result of a REST web
+     service call, given the service's URL.
 
     Args:
         url: The URL to retrieve a response from.
     
     Returns:
-        A Python object representation of the JSON response received from the REST web service.
+        A Python object representation of the JSON response received from the
+            REST web service.
     """
     
     # Get the service response
