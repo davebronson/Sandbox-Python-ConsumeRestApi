@@ -3,6 +3,7 @@ class Address(object):
     Represents a place of residence for a person or business.
 
     Attributes:
+        id: The unique identifier for the Album.
         userId: The ID of the User that this Address belongs to.
         street: The number and street name.
         suite: The suite or apartment number, if any.
@@ -18,6 +19,7 @@ class Address(object):
         '''
         Initializes Address with default values.
         '''
+        self.id = None
         self.userId = None
         self.street = None
         self.suite = None

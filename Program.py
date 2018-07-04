@@ -42,11 +42,12 @@ for item in users:
     user.companyCatchPhrase = item['company']['catchPhrase']
     user.companyBs = item['company']['bs']
 
+    user.address.id = 0 #  No ID provided
+    user.address.userId = user.id
     user.address.street = item['address']['street']
     user.address.suite = item['address']['suite']
     user.address.city = item['address']['city']
     user.address.zipCode = item['address']['zipcode']
-    user.address.suite = item['address']['suite']
     user.address.geoLatitude = item['address']['geo']['lat']
     user.address.geoLongitude = item['address']['geo']['lng']
 
